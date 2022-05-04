@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@color/cardview_dark_background">
+
+    <TextView
+        android:id="@+id/path_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/folder_vector"
+        android:minHeight="60dp"
+        android:text="@string/path"
+        android:textSize="25dp" />
+
+    <ImageButton
+        android:id="@+id/folder_vector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/folder"
+        android:minWidth="60dp"
+        android:minHeight="60dp"
+        android:onClick="directoryPick"
+        android:src="@drawable/baseline_folder_18" />
+
+</RelativeLayout>

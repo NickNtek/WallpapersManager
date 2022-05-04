@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NustyWallpapers</string>
+    <string name="path">No Path Detected</string>
+    <string name="folder">Pick Wallpapers Folder</string>
+</resources>
