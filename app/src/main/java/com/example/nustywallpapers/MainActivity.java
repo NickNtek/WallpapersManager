@@ -1,5 +1,7 @@
 package com.example.nustywallpapers;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -11,6 +13,7 @@ import androidx.documentfile.provider.DocumentFile;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,11 +40,15 @@ public class MainActivity extends AppCompatActivity {
     public static final String GRANTED = "Permission Granted";
     public static final String DENIED = "Permission Denied";
 
+    TextView pathView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        pathView = findViewById(R.id.path_view);
 
         //GET FILE PERMISSIONS
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
@@ -68,4 +76,26 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, toast, Toast.LENGTH_SHORT).show();
     }
 
+    public void directoryPick(View view) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        getFolderUri.launch(intent);
+    }
+
+    ActivityResultLauncher<Intent> getFolderUri = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent i = result.getData();
+                        Log.d("CODED_PATH", i.getData().getEncodedPath());
+                        Log.d("PATH", i.getData().getPath());
+                        Log.d("DATA", i.getData().toString());
+                        List<String> list = i.getData().getPathSegments();
+                        for (String item : list) {
+                            Log.d("PATH_SEGMENT", item);
+                        }
+                        pathView.setText(i.getData().getPath());
+                    }
+                }
+            });
 }
