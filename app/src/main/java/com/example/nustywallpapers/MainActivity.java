@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
 
     TextView pathView;
 
+    //TODO: 1 SAVE PATH
+    //TODO: 2 CONCAT PATH SEGMENTS TO MAKE PATH VIEW???
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -76,11 +79,13 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, toast, Toast.LENGTH_SHORT).show();
     }
 
+    //open system folder picker
     public void directoryPick(View view) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         getFolderUri.launch(intent);
     }
 
+    // handle the result returned from folder picker
     ActivityResultLauncher<Intent> getFolderUri = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -95,7 +100,37 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("PATH_SEGMENT", item);
                         }
                         pathView.setText(i.getData().getPath());
+                        savePath();
                     }
                 }
             });
+
+    //save path when activity closes
+    private void savePath() {
+        SharedPreferences sp = getSharedPreferences("MySharedPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putString("path", pathView.getText().toString());
+        editor.apply();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        savePath();
+    }
+
+    //load path when activity resumes
+    private void loadPath() {
+        SharedPreferences sp = getSharedPreferences("MySharedPrefs", MODE_PRIVATE);
+
+        String path = sp.getString("path", "No Path Selected");
+        pathView.setText(path);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadPath();
+    }
 }
