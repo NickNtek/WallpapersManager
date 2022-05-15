@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
     TextView pathView;
 
-    //TODO: 1 SAVE PATH
     //TODO: 2 CONCAT PATH SEGMENTS TO MAKE PATH VIEW???
 
     @Override
@@ -61,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
             resultLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
             //BreadToast(DENIED);
         }
+
+        //start Receiver
+        BroadcastReceiver br = new LockReceiver();
+
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+        this.registerReceiver(br, intentFilter);
 
     }
 
@@ -124,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadPath() {
         SharedPreferences sp = getSharedPreferences("MySharedPrefs", MODE_PRIVATE);
 
-        String path = sp.getString("path", "No Path Selected");
+        String path = sp.getString("path", "-1");
         pathView.setText(path);
     }
 
