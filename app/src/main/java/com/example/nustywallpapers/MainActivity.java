@@ -105,37 +105,21 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("PATH_SEGMENT", item);
                         }
                         pathView.setText(i.getData().getPath());
-                        savePath();
+                        PathHandler.savePath(getApplicationContext(), pathView.getText().toString());
                     }
                 }
             });
 
-    //save path when activity closes
-    private void savePath() {
-        SharedPreferences sp = getSharedPreferences("MySharedPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-
-        editor.putString("path", pathView.getText().toString());
-        editor.apply();
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
-        savePath();
+        PathHandler.savePath(this, pathView.getText().toString());
     }
 
-    //load path when activity resumes
-    private void loadPath() {
-        SharedPreferences sp = getSharedPreferences("MySharedPrefs", MODE_PRIVATE);
-
-        String path = sp.getString("path", "-1");
-        pathView.setText(path);
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadPath();
+        pathView.setText(PathHandler.loadPath(this));
     }
 }

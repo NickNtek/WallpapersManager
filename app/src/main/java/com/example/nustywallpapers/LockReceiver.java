@@ -13,9 +13,7 @@ public class LockReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
-
-        SharedPreferences sp = context.getSharedPreferences("MySharedPrefs", context.MODE_PRIVATE);
-        String path = sp.getString("path", "-1");
+        String path = PathHandler.loadPath(context);
         Log.d("PATH", "PATH IS: "+path);
     }
 }
