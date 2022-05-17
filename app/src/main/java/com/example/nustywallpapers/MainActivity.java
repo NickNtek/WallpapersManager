@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("PATH_SEGMENT", item);
                         }
                         pathView.setText(i.getData().getPath());
-                        PathHandler.savePath(getApplicationContext(), pathView.getText().toString());
+                        PathHandler.savePath(getApplicationContext(), "uri", i.getData().toString());
+                        PathHandler.savePath(getApplicationContext(), "path", pathView.getText().toString());
                     }
                 }
             });
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        PathHandler.savePath(this, pathView.getText().toString());
+        PathHandler.savePath(this, "path", pathView.getText().toString());
     }
 
 
