@@ -73,12 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
         pathView.setText(PathHandler.loadPath(this));
 
-        if (pathView.getText().toString().matches("/storage/(.*)")) {
-            Toast.makeText(this, "GOOD JOB", Toast.LENGTH_SHORT).show();
-            serviceStarter();
-        } else {
-            Toast.makeText(this, "OH FUCK OFF YOU BITCH", Toast.LENGTH_SHORT).show();
-        }
     }
 
 
@@ -140,15 +134,4 @@ public class MainActivity extends AppCompatActivity {
         pathView.setText(PathHandler.loadPath(this));
     }
 
-    private void serviceStarter() {
-        //START FILE OBSERVER SERVICE
-        Intent directoryObserver = new Intent(this, FolderService.class);
-        directoryObserver.putExtra("dir", pathView.getText().toString());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(directoryObserver);
-        } else {
-            Toast.makeText(this, "GAMW TO SPITI", Toast.LENGTH_LONG).show();
-            startService(directoryObserver);
-        }
-    }
 }
