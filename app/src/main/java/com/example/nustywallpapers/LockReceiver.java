@@ -15,5 +15,9 @@ public class LockReceiver extends BroadcastReceiver {
         // an Intent broadcast.
         String path = PathHandler.loadPath(context);
         Log.d("PATH", "PATH IS: "+path);
+        //TODO: GET SAVED PATH.
+        //TODO: GET LIST OF FILES IN PATH. (SAVE I LIST)
+        //TODO: FIND CURRENT IMAGE (SAVED IN PREFERENCES)
+        //TODO: CALL WALLPAPER HANDLER SERVICE WITH INDEX
     }
 }

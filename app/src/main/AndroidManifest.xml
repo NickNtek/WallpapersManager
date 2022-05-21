@@ -11,10 +11,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NustyWallpapers">
+        <service
+            android:name=".FolderService"
+            android:enabled="true"
+            android:exported="true" />
+
         <receiver
             android:name=".LockReceiver"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
 
         <activity
             android:name=".MainActivity"
