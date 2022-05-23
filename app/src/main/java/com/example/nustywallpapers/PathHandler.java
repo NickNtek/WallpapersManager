@@ -28,6 +28,14 @@ public class PathHandler {
         return path;
     }
 
+    //load path when activity resumes
+    public static String loadUri(Context context) {
+        SharedPreferences sp = context.getSharedPreferences("MySharedPrefs", MODE_PRIVATE);
+
+        String uri = sp.getString("uri", "-1");
+        return uri;
+    }
+
     public static String pathConcat(List<String> list) {
         String path = "/storage/";
         for (String item : list){
