@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         this.registerReceiver(br, intentFilter);
 
-        pathView.setText(PathHandler.loadPath(this));
+        //pathView.setText(PathHandler.loadValue(this, "path"));
 
     }
 
@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                         pathView.setText(i.getData().getPath());
                         String path = PathHandler.pathConcat(list);
-                        PathHandler.savePath(getApplicationContext(), "uri", i.getData().toString());
-                        PathHandler.savePath(getApplicationContext(), "path", path);
+                        PathHandler.saveValue(getApplicationContext(), "uri", i.getData().toString());
+                        PathHandler.saveValue(getApplicationContext(), "path", path);
                     }
                 }
             });
@@ -124,14 +124,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        PathHandler.savePath(this, "path", pathView.getText().toString());
+        PathHandler.saveValue(this, "path", pathView.getText().toString());
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        pathView.setText(PathHandler.loadPath(this));
+        pathView.setText(PathHandler.loadValue(this, "path"));
     }
 
 }

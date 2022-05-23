@@ -11,29 +11,21 @@ import java.util.List;
 public class PathHandler {
 
     //save path when activity closes
-    public static void savePath(Context context, String key, String path) {
+    public static void saveValue(Context context, String key, String value) {
         SharedPreferences sp = context.getSharedPreferences("MySharedPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
 
-        editor.putString(key, path);
+        editor.putString(key, value);
         editor.apply();
     }
 
 
     //load path when activity resumes
-    public static String loadPath(Context context) {
+    public static String loadValue(Context context, String key) {
         SharedPreferences sp = context.getSharedPreferences("MySharedPrefs", MODE_PRIVATE);
 
-        String path = sp.getString("path", "-1");
-        return path;
-    }
-
-    //load path when activity resumes
-    public static String loadUri(Context context) {
-        SharedPreferences sp = context.getSharedPreferences("MySharedPrefs", MODE_PRIVATE);
-
-        String uri = sp.getString("uri", "-1");
-        return uri;
+        String value = sp.getString(key, "-1");
+        return value;
     }
 
     public static String pathConcat(List<String> list) {
