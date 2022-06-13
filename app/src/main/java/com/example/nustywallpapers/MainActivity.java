@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
     TextView pathView;
 
-    //TODO: 2 CONCAT PATH SEGMENTS TO MAKE PATH VIEW???
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,13 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent i = result.getData();
-                        Log.d("CODED_PATH", i.getData().getEncodedPath());
-                        Log.d("PATH", i.getData().getPath());
-                        Log.d("DATA", i.getData().toString());
                         List<String> list = i.getData().getPathSegments();
-                        for (String item : list) {
-                            Log.d("PATH_SEGMENT", item);
-                        }
                         pathView.setText(i.getData().getPath());
                         String path = PathHandler.pathConcat(list);
                         PathHandler.saveValue(getApplicationContext(), "uri", i.getData().toString());

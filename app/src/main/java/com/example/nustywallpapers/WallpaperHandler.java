@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.PasswordAuthentication;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 public class WallpaperHandler {
@@ -47,6 +48,7 @@ public class WallpaperHandler {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.context.getContentResolver(), next);
             wp.setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
             PathHandler.saveValue(context, "current", next.toString());
+            Log.d("TIMER", "WALLPAPER CHANGED AFTER "+ new Date().getTime());
             return 1;
         } catch (IOException e) {
             e.printStackTrace();
