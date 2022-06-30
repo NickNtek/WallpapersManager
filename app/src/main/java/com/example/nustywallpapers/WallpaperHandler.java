@@ -28,6 +28,8 @@ public class WallpaperHandler {
 
     private Context context;
     private WallpaperManager wp;
+    public static final String LOCK_CHECKBOX_KEY = "lockScreen";
+
 
     public Context getContext() {
         return context;
@@ -44,9 +46,17 @@ public class WallpaperHandler {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public int setLockWall(Uri next) {
+        boolean lock =PathHandler.loadValue(context, LOCK_CHECKBOX_KEY).equals("1");
+        int screenFlag;
+        if (lock) {
+            screenFlag = WallpaperManager.FLAG_LOCK;
+        } else {
+            screenFlag = WallpaperManager.FLAG_SYSTEM;
+        }
         try {
+
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.context.getContentResolver(), next);
-            wp.setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+            wp.setBitmap(bitmap, null, false, screenFlag);
             PathHandler.saveValue(context, "current", next.toString());
             Log.d("TIMER", "WALLPAPER CHANGED AFTER "+ new Date().getTime());
             return 1;

@@ -30,4 +30,12 @@
         android:onClick="directoryPick"
         android:src="@drawable/baseline_folder_18" />
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/LockScreenCheckBox"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/path_view"
+        android:text="@string/checkbox"/>
+
 </RelativeLayout>

@@ -30,6 +30,7 @@ import android.os.FileObserver;
 import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,9 +44,11 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 1;
     public static final String GRANTED = "Permission Granted";
     public static final String DENIED = "Permission Denied";
+    public static final String PATH_KEY = "path";
+    public static final String LOCK_CHECKBOX_KEY = "lockScreen";
 
     TextView pathView;
-
+    CheckBox lockScreenCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         pathView = findViewById(R.id.path_view);
+        lockScreenCheckBox = findViewById(R.id.LockScreenCheckBox);
+
 
         //GET FILE PERMISSIONS
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
@@ -117,14 +122,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        PathHandler.saveValue(this, "path", pathView.getText().toString());
+        PathHandler.saveValue(this, PATH_KEY, pathView.getText().toString());
+        if (lockScreenCheckBox.isChecked()) {
+            PathHandler.saveValue(this, LOCK_CHECKBOX_KEY, "1");
+        } else {
+            PathHandler.saveValue(this, LOCK_CHECKBOX_KEY, "0");
+        }
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        pathView.setText(PathHandler.loadValue(this, "path"));
+        pathView.setText(PathHandler.loadValue(this, PATH_KEY));
+        lockScreenCheckBox.setChecked(PathHandler.loadValue(this, LOCK_CHECKBOX_KEY).equals("1"));
     }
 
+    public void checkboxValue(View view) {
+        BreadToast("checkbox: "+lockScreenCheckBox.isChecked());
+    }
 }
