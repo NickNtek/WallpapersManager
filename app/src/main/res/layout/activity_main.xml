@@ -38,4 +38,13 @@
         android:layout_below="@+id/path_view"
         android:text="@string/checkbox"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/testButton"
+        android:text="@string/buttonTest"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/path_view"
+        android:onClick="buttonTestFunction" />
+
 </RelativeLayout>

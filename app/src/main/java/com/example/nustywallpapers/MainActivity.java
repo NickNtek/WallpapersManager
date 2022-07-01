@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView pathView;
     CheckBox lockScreenCheckBox;
+    ImageDbHelper imageDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         pathView = findViewById(R.id.path_view);
         lockScreenCheckBox = findViewById(R.id.LockScreenCheckBox);
+        imageDbHelper = new ImageDbHelper(this);
 
 
         //GET FILE PERMISSIONS
@@ -112,9 +115,27 @@ public class MainActivity extends AppCompatActivity {
                         Intent i = result.getData();
                         List<String> list = i.getData().getPathSegments();
                         pathView.setText(i.getData().getPath());
-                        String path = PathHandler.pathConcat(list);
-                        PathHandler.saveValue(getApplicationContext(), "uri", i.getData().toString());
-                        PathHandler.saveValue(getApplicationContext(), "path", path);
+
+                        Uri uri = i.getData();
+                        DocumentFile directory = DocumentFile.fromTreeUri(MainActivity.this, uri);
+                        DocumentFile[] files;
+
+                        imageDbHelper.deleteAll();
+                        if (directory != null) {
+                            files = directory.listFiles();
+                            for (DocumentFile f: files) {
+                                if (f.isFile()){
+                                    if (f.getType().matches("(^)image(.*)")) {
+                                        ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false);
+                                        imageDbHelper.insert(imageModel);
+                                    }
+                                }
+                            }
+                        } else {
+                            Log.e("ERROR", "Directory is null");
+                            BreadToast("directory is null");
+                        }
+
                     }
                 }
             });
@@ -138,7 +159,11 @@ public class MainActivity extends AppCompatActivity {
         lockScreenCheckBox.setChecked(PathHandler.loadValue(this, LOCK_CHECKBOX_KEY).equals("1"));
     }
 
-    public void checkboxValue(View view) {
-        BreadToast("checkbox: "+lockScreenCheckBox.isChecked());
+
+    public void buttonTestFunction(View view) {
+        ArrayList<ImageModel> images = imageDbHelper.getAll();
+        for (ImageModel i : images) {
+            Log.d("IMAGE", i.toString());
+        }
     }
 }

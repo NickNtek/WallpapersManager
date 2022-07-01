@@ -3,4 +3,5 @@
     <string name="path">No Path Detected</string>
     <string name="folder">Pick Wallpapers Folder</string>
     <string name="checkbox">Lock Screen</string>
+    <string name="buttonTest">DB TEST</string>
 </resources>
