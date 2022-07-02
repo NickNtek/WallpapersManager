@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -18,6 +19,7 @@ public class ImageDbHelper extends SQLiteOpenHelper {
     public static final String NAME = "img_name";
     public static final String HASH = "image_hash_code";
     public static final String CURRENT = "current_wallpaper";
+    public static final String FIRST = "first_wallpaper";
 
     public ImageDbHelper(@Nullable Context context) {
         super(context, DB_NAME, null, VERSION);
@@ -31,7 +33,8 @@ public class ImageDbHelper extends SQLiteOpenHelper {
                     +PATH+" TEXT NOT NULL,"
                     +NAME+" TEXT NOT NULL,"
                     +HASH+" TEXT NOT NULL,"
-                    +CURRENT+" BOOLEAN NOT NULL"
+                    +CURRENT+" BOOLEAN NOT NULL,"
+                    +FIRST+" BOOLEAN NOT NULL"
                 +");"
         );
     }
@@ -48,13 +51,14 @@ public class ImageDbHelper extends SQLiteOpenHelper {
         values.put(NAME, imageModel.getName());
         values.put(HASH, imageModel.getHash());
         values.put(CURRENT, imageModel.isCurrent());
+        values.put(FIRST, imageModel.isFirst());
 
         return sqLiteDatabase.insert(DB_NAME, null, values);
     }
 
-    public long deleteAll() {
+    public void deleteAll() {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        return  sqLiteDatabase.delete(DB_NAME, null, null);
+        sqLiteDatabase.delete(DB_NAME, null, null);
     }
 
     public ArrayList<ImageModel> getAll() {
@@ -67,17 +71,70 @@ public class ImageDbHelper extends SQLiteOpenHelper {
                 String path = cursor.getString(1);
                 String name = cursor.getString(2);
                 int hash = cursor.getInt(3);
+
                 int current = cursor.getInt(4);
-                boolean currentFlag;
-                if ( current == 1 ){
-                    currentFlag = true;
-                } else {
-                    currentFlag = false;
-                }
-                ImageModel image = new ImageModel(id, path, name, hash, currentFlag);
+                boolean currentFlag = current == 1;
+
+                int first = cursor.getInt(5);
+                boolean firstFlag = first == 1;
+
+                ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag);
                 images.add(image);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return images;
+    }
+
+    public ImageModel findCurrent() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(DB_NAME, null, CURRENT+"=?", new String[] {Integer.toString(1)}, null, null, null);
+        if (cursor.moveToFirst()) {
+
+            int id = cursor.getInt(0);
+            String path = cursor.getString(1);
+            String name = cursor.getString(2);
+            int hash = cursor.getInt(3);
+
+            int current = cursor.getInt(4);
+            boolean currentFlag = current == 1;
+
+            int first = cursor.getInt(5);
+            boolean firstFlag = first == 1;
+
+            ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag);
+
+            cursor.close();
+
+            return  image;
+        }
+        cursor.close();
+        return null;
+    }
+
+    public ImageModel findFirst() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(DB_NAME, null, FIRST+"=?", new String[] {Integer.toString(1)}, null, null, null);
+        if (cursor.moveToFirst()) {
+
+            int id = cursor.getInt(0);
+            String path = cursor.getString(1);
+            String name = cursor.getString(2);
+            int hash = cursor.getInt(3);
+
+            int current = cursor.getInt(4);
+            boolean currentFlag = current == 1;
+
+            int first = cursor.getInt(5);
+            boolean firstFlag = first == 1;
+
+            ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag);
+
+            cursor.close();
+            return  image;
+        }
+
+        cursor.close();
+        return null;
     }
 }

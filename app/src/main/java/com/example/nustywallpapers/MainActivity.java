@@ -114,11 +114,14 @@ public class MainActivity extends AppCompatActivity {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent i = result.getData();
                         List<String> list = i.getData().getPathSegments();
-                        pathView.setText(i.getData().getPath());
+
+                        pathView.setText(PathHandler.pathConcat(list));
 
                         Uri uri = i.getData();
                         DocumentFile directory = DocumentFile.fromTreeUri(MainActivity.this, uri);
                         DocumentFile[] files;
+
+                        boolean first = true;
 
                         imageDbHelper.deleteAll();
                         if (directory != null) {
@@ -126,7 +129,13 @@ public class MainActivity extends AppCompatActivity {
                             for (DocumentFile f: files) {
                                 if (f.isFile()){
                                     if (f.getType().matches("(^)image(.*)")) {
-                                        ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false);
+                                        if (first) {
+                                            ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first);
+                                            imageDbHelper.insert(imageModel);
+                                            first = false;
+                                            continue;
+                                        }
+                                        ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first);
                                         imageDbHelper.insert(imageModel);
                                     }
                                 }
@@ -165,5 +174,20 @@ public class MainActivity extends AppCompatActivity {
         for (ImageModel i : images) {
             Log.d("IMAGE", i.toString());
         }
+
+        ImageModel current = imageDbHelper.findCurrent();
+        if (current == null) {
+            Log.d("CURRENT", "NO CURRENT IMAGE");
+        } else {
+            Log.d("CURRENT", current.toString());
+        }
+
+        ImageModel first = imageDbHelper.findFirst();
+        if (first == null) {
+            Log.d("FIRST", "NO CURRENT IMAGE");
+        } else {
+            Log.d("FIRST", first.toString());
+        }
+
     }
 }

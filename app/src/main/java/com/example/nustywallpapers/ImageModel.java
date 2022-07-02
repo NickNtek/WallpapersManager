@@ -11,6 +11,8 @@ public class ImageModel {
 
     private boolean current;
 
+    private boolean first;
+
     //GETTERS AND SETTERS
     public int getId() {
         return id;
@@ -52,21 +54,31 @@ public class ImageModel {
         this.current = current;
     }
 
+    public boolean isFirst() {
+        return first;
+    }
+
+    public void setFisrt(boolean first) {
+        this.first = first;
+    }
+
 
     //CONSTRUCTORS
-    public ImageModel(String path, String name, int hash, boolean current) {
+    public ImageModel(String path, String name, int hash, boolean current, boolean first) {
         this.path = path;
         this.name = name;
         this.hash = hash;
         this.current = current;
+        this.first = first;
     }
 
-    public ImageModel(int id, String path, String name, int hash, boolean current) {
+    public ImageModel(int id, String path, String name, int hash, boolean current, boolean first) {
         this.id = id;
         this.path = path;
         this.name = name;
         this.hash = hash;
         this.current = current;
+        this.first = first;
     }
 
     public ImageModel() {
@@ -74,14 +86,16 @@ public class ImageModel {
 
     //toString
 
+
     @Override
     public String toString() {
         return "ImageModel{" +
                 "id=" + id +
                 ", path='" + path + '\'' +
                 ", name='" + name + '\'' +
-                ", hash='" + hash + '\'' +
+                ", hash=" + hash +
                 ", current=" + current +
+                ", first=" + first +
                 '}';
     }
 }
