@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.documentfile.provider.DocumentFile;
@@ -25,55 +26,31 @@ public class LockReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
-        Log.d("TIMER", "BROADCAST RECEIVED AT "+ new Date().getTime());
-        String path = PathHandler.loadValue(context, "path");
-        String current = PathHandler.loadValue(context, "current");
-        boolean next = false, first = true;
+        ImageDbHelper dbHelper = new ImageDbHelper(context);
         WallpaperHandler wh = new WallpaperHandler(context);
 
-        String uri = PathHandler.loadValue(context, "uri");
-        if (uri.equals("-1")) {
-            Log.e("URI ERROR", "SAVED URI INVALID");
+        ImageModel current = dbHelper.findCurrent();
+        if (current != null) {
+            int id = current.getId();
+            ImageModel next;
+            do {
+                id++;
+                next = dbHelper.findById(id);
+            } while (next == null);
+            String uri = next.getPath()+"%2F"+next.getName();
+            wh.setLockWall(Uri.parse(uri));
+            dbHelper.updateCurrent(next, true);
+            dbHelper.updateCurrent(current, false);
         } else {
-            
-            Uri data = Uri.parse(uri);
-            DocumentFile directory = DocumentFile.fromTreeUri(context, data);
-            DocumentFile[] files = directory.listFiles();
-            DocumentFile firstFile = null;
-            for (DocumentFile f : files) {
-                if (f.isFile()) {
-                    if (f.getType().matches("(^)image(.*)")) {
-                        if (first) {
-                            firstFile = f;
-                            first = false;
-                        }
-
-                        if (current.equals("-1")) {
-                            int n = wh.setLockWall(f.getUri());
-                            break;
-                        }
-
-                        if (!next && f.equals(files[files.length - 1])) {
-                            Log.d("TIMER", "LAST");
-                            int n = wh.setLockWall(firstFile.getUri());
-                            break;
-                        }
-
-                        if (current.equals(f.getUri().toString())) {
-                            next = true;
-                            continue;
-                        }
-
-
-                        if (next) {
-                            int n = wh.setLockWall(f.getUri());
-                            next = false;
-                            break;
-                        }
-                    }
-                }
+            Log.e("RECEIVER", "cannot find current wallpaper");
+            ImageModel first = dbHelper.findFirst();
+            if (first != null) {
+                String uri = first.getPath()+"%2F"+first.getName();
+                wh.setLockWall(Uri.parse(uri));
+                dbHelper.updateCurrent(first, true);
+            } else {
+                Log.e("RECEIVER", "cannot find first image");
             }
-
 
         }
 

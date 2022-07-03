@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                         List<String> list = i.getData().getPathSegments();
 
                         pathView.setText(PathHandler.pathConcat(list));
+                        PathHandler.saveValue(MainActivity.this, PATH_KEY, pathView.getText().toString());
 
                         Uri uri = i.getData();
                         DocumentFile directory = DocumentFile.fromTreeUri(MainActivity.this, uri);

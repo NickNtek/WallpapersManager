@@ -137,4 +137,36 @@ public class ImageDbHelper extends SQLiteOpenHelper {
         cursor.close();
         return null;
     }
+
+    public ImageModel findById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(DB_NAME, null, KEY_ID+"=?", new String[] {Integer.toString(id)}, null, null, null);
+        if (cursor.moveToFirst()) {
+
+            String path = cursor.getString(1);
+            String name = cursor.getString(2);
+            int hash = cursor.getInt(3);
+
+            int current = cursor.getInt(4);
+            boolean currentFlag = current == 1;
+
+            int first = cursor.getInt(5);
+            boolean firstFlag = first == 1;
+
+            ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag);
+
+            cursor.close();
+            return  image;
+        }
+
+        cursor.close();
+        return null;
+    }
+
+    public long updateCurrent(ImageModel imageModel, boolean b) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CURRENT, b);
+        return sqLiteDatabase.update(DB_NAME, values, KEY_ID+"=?", new String[] {Integer.toString(imageModel.getId())});
+    }
 }
