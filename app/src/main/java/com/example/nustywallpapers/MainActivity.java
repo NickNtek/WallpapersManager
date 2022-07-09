@@ -28,12 +28,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.provider.DocumentsContract;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.nustywallpapers.DatabaseListView.databaseView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String DENIED = "Permission Denied";
     public static final String PATH_KEY = "path";
     public static final String LOCK_CHECKBOX_KEY = "lockScreen";
+    public static final String WIDTH = "screen_width";
+    public static final String HEIGHT = "screen_height";
 
     TextView pathView;
     CheckBox lockScreenCheckBox;
@@ -62,6 +67,14 @@ public class MainActivity extends AppCompatActivity {
         lockScreenCheckBox = findViewById(R.id.LockScreenCheckBox);
         imageDbHelper = new ImageDbHelper(this);
 
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+
+        PathHandler.saveValue(this, WIDTH, width+"");
+        PathHandler.saveValue(this, HEIGHT, height+"");
 
         //GET FILE PERMISSIONS
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
@@ -124,23 +137,32 @@ public class MainActivity extends AppCompatActivity {
 
                         boolean first = true;
 
+                        ArrayList<ImageModel> forSave = new ArrayList<>();
+
                         imageDbHelper.deleteAll();
                         if (directory != null) {
                             files = directory.listFiles();
-                            for (DocumentFile f: files) {
+                            for (int count = 0; count< files.length; count++) {
+                                DocumentFile f = files[count];
                                 if (f.isFile()){
                                     if (f.getType().matches("(^)image(.*)")) {
                                         if (first) {
-                                            ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first);
-                                            imageDbHelper.insert(imageModel);
+
+                                            ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first, true);
+                                            //imageDbHelper.insert(imageModel);
+                                            forSave.add(imageModel);
                                             first = false;
                                             continue;
                                         }
-                                        ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first);
-                                        imageDbHelper.insert(imageModel);
+                                        ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first, true);
+                                        //imageDbHelper.insert(imageModel);
+                                        forSave.add(imageModel);
+                                        forSave.get(count-1).setLast(false);
+
                                     }
                                 }
                             }
+                            imageDbHelper.saveAll(forSave);
                         } else {
                             Log.e("ERROR", "Directory is null");
                             BreadToast("directory is null");
@@ -175,7 +197,11 @@ public class MainActivity extends AppCompatActivity {
         for (ImageModel i : images) {
             Log.d("IMAGE", i.toString());
         }
+        Intent intent = new Intent(this, databaseView.class);
+        startActivity(intent);
 
+
+/*
         ImageModel current = imageDbHelper.findCurrent();
         if (current == null) {
             Log.d("CURRENT", "NO CURRENT IMAGE");
@@ -189,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d("FIRST", first.toString());
         }
+*/
+
 
     }
 }

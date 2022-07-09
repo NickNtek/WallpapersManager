@@ -20,6 +20,7 @@ public class ImageDbHelper extends SQLiteOpenHelper {
     public static final String HASH = "image_hash_code";
     public static final String CURRENT = "current_wallpaper";
     public static final String FIRST = "first_wallpaper";
+    public static final String LAST = "last_wallpaper";
 
     public ImageDbHelper(@Nullable Context context) {
         super(context, DB_NAME, null, VERSION);
@@ -34,7 +35,8 @@ public class ImageDbHelper extends SQLiteOpenHelper {
                     +NAME+" TEXT NOT NULL,"
                     +HASH+" TEXT NOT NULL,"
                     +CURRENT+" BOOLEAN NOT NULL,"
-                    +FIRST+" BOOLEAN NOT NULL"
+                    +FIRST+" BOOLEAN NOT NULL,"
+                    +LAST+" BOOLEAN NOT NULL"
                 +");"
         );
     }
@@ -53,12 +55,39 @@ public class ImageDbHelper extends SQLiteOpenHelper {
         values.put(CURRENT, imageModel.isCurrent());
         values.put(FIRST, imageModel.isFirst());
 
+
         return sqLiteDatabase.insert(DB_NAME, null, values);
+    }
+
+    public long saveAll (ArrayList<ImageModel> imageList) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        long status = 0;
+        for (ImageModel imageModel: imageList) {
+            values.clear();
+            values.put(PATH, imageModel.getPath());
+            values.put(NAME, imageModel.getName());
+            values.put(HASH, imageModel.getHash());
+            values.put(CURRENT, imageModel.isCurrent());
+            values.put(FIRST, imageModel.isFirst());
+            values.put(LAST, imageModel.isLast());
+            status = sqLiteDatabase.insert(DB_NAME, null, values);
+            if (status <1) {
+                return status;
+            }
+        }
+        return status;
     }
 
     public void deleteAll() {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         sqLiteDatabase.delete(DB_NAME, null, null);
+    }
+
+    public int deleteById(int id) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        int status = sqLiteDatabase.delete(DB_NAME, "id=?", new String[] {Integer.toString(id)});
+        return status;
     }
 
     public ArrayList<ImageModel> getAll() {
@@ -78,11 +107,15 @@ public class ImageDbHelper extends SQLiteOpenHelper {
                 int first = cursor.getInt(5);
                 boolean firstFlag = first == 1;
 
-                ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag);
+                int last = cursor.getInt(6);
+                boolean lastFlag = last == 1;
+
+                ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag, lastFlag);
                 images.add(image);
             } while (cursor.moveToNext());
         }
         cursor.close();
+        db.close();
         return images;
     }
 
@@ -102,13 +135,17 @@ public class ImageDbHelper extends SQLiteOpenHelper {
             int first = cursor.getInt(5);
             boolean firstFlag = first == 1;
 
-            ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag);
+            int last = cursor.getInt(6);
+            boolean lastFlag = last == 1;
+
+            ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag, lastFlag);
 
             cursor.close();
-
+            db.close();
             return  image;
         }
         cursor.close();
+        db.close();
         return null;
     }
 
@@ -128,13 +165,18 @@ public class ImageDbHelper extends SQLiteOpenHelper {
             int first = cursor.getInt(5);
             boolean firstFlag = first == 1;
 
-            ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag);
+            int last = cursor.getInt(6);
+            boolean lastFlag = last == 1;
+
+            ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag, lastFlag);
 
             cursor.close();
-            return  image;
+            db.close();
+            return image;
         }
 
         cursor.close();
+        db.close();
         return null;
     }
 
@@ -153,14 +195,20 @@ public class ImageDbHelper extends SQLiteOpenHelper {
             int first = cursor.getInt(5);
             boolean firstFlag = first == 1;
 
-            ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag);
+            int last = cursor.getInt(6);
+            boolean lastFlag = last == 1;
+
+            ImageModel image = new ImageModel(id, path, name, hash, currentFlag, firstFlag, lastFlag);
 
             cursor.close();
+            db.close();
             return  image;
         }
 
         cursor.close();
-        return null;
+        db.close();
+        ImageModel imageModel = new ImageModel(-1, null, null, -1, false, false, false);
+        return imageModel;
     }
 
     public long updateCurrent(ImageModel imageModel, boolean b) {

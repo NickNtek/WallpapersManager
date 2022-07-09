@@ -13,6 +13,8 @@ public class ImageModel {
 
     private boolean first;
 
+    private boolean last;
+
     //GETTERS AND SETTERS
     public int getId() {
         return id;
@@ -62,23 +64,32 @@ public class ImageModel {
         this.first = first;
     }
 
+    public boolean isLast() {
+        return last;
+    }
+
+    public void setLast(boolean last) {
+        this.last = last;
+    }
 
     //CONSTRUCTORS
-    public ImageModel(String path, String name, int hash, boolean current, boolean first) {
+    public ImageModel(String path, String name, int hash, boolean current, boolean first, boolean last) {
         this.path = path;
         this.name = name;
         this.hash = hash;
         this.current = current;
         this.first = first;
+        this.last = last;
     }
 
-    public ImageModel(int id, String path, String name, int hash, boolean current, boolean first) {
+    public ImageModel(int id, String path, String name, int hash, boolean current, boolean first, boolean last) {
         this.id = id;
         this.path = path;
         this.name = name;
         this.hash = hash;
         this.current = current;
         this.first = first;
+        this.last = last;
     }
 
     public ImageModel() {
@@ -96,6 +107,7 @@ public class ImageModel {
                 ", hash=" + hash +
                 ", current=" + current +
                 ", first=" + first +
+                ", last=" + last +
                 '}';
     }
 }

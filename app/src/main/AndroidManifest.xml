@@ -3,7 +3,6 @@
     package="com.example.nustywallpapers">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <application
@@ -13,6 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NustyWallpapers">
+        <activity
+            android:name=".DatabaseListView.databaseView"
+            android:exported="false" />
 
         <receiver
             android:name=".LockReceiver"
