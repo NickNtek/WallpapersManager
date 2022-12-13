@@ -33,11 +33,12 @@ public class MainActivity extends AppCompatActivity {
     public static final String DENIED = "Permission Denied";
     public static final String PATH_KEY = "path";
     public static final String LOCK_CHECKBOX_KEY = "lockScreen";
+    public static final String RANDOM_IMAGE_CHECKBOX_KEY = "randomImage";
     public static final String WIDTH = "screen_width";
     public static final String HEIGHT = "screen_height";
 
     TextView pathView;
-    CheckBox lockScreenCheckBox;
+    CheckBox lockScreenCheckBox, randomCheckbox;
     ImageDbHelper imageDbHelper;
 
     @Override
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         pathView = findViewById(R.id.path_view);
         lockScreenCheckBox = findViewById(R.id.LockScreenCheckBox);
+        randomCheckbox = findViewById(R.id.RandomImageOrder);
         imageDbHelper = new ImageDbHelper(this);
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -168,6 +170,12 @@ public class MainActivity extends AppCompatActivity {
         } else {
             PathHandler.saveValue(this, LOCK_CHECKBOX_KEY, "0");
         }
+        if (randomCheckbox.isChecked()) {
+            PathHandler.saveValue(this, RANDOM_IMAGE_CHECKBOX_KEY, "1");
+        } else {
+            PathHandler.saveValue(this, RANDOM_IMAGE_CHECKBOX_KEY, "0");
+        }
+
     }
 
 
@@ -176,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         pathView.setText(PathHandler.loadValue(this, PATH_KEY));
         lockScreenCheckBox.setChecked(PathHandler.loadValue(this, LOCK_CHECKBOX_KEY).equals("1"));
+        randomCheckbox.setChecked(PathHandler.loadValue(this, RANDOM_IMAGE_CHECKBOX_KEY).equals("1"));
     }
 
 

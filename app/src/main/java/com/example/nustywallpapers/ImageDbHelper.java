@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ImageDbHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "WALLPAPERS";
@@ -216,5 +217,19 @@ public class ImageDbHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(CURRENT, b);
         return sqLiteDatabase.update(DB_NAME, values, KEY_ID+"=?", new String[] {Integer.toString(imageModel.getId())});
+    }
+
+    public ArrayList<Integer> getAllIds() {
+        ArrayList<Integer> idArray = new ArrayList();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(DB_NAME, new String[] {KEY_ID}, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                idArray.add(cursor.getInt(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return idArray;
     }
 }

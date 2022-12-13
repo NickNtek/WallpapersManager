@@ -13,6 +13,10 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
+
 public class OnLockService extends Service {
     BroadcastReceiver broadcastReceiver;
 
@@ -24,6 +28,8 @@ public class OnLockService extends Service {
         public void onReceive(Context context, Intent intent) {
             // TODO: This method is called when the BroadcastReceiver is receiving
             // an Intent broadcast.
+            boolean random = PathHandler.loadValue(context, MainActivity.RANDOM_IMAGE_CHECKBOX_KEY).equals("1");
+
             ImageDbHelper dbHelper = new ImageDbHelper(context);
             WallpaperHandler wh = new WallpaperHandler(context);
 
@@ -33,7 +39,11 @@ public class OnLockService extends Service {
             if (current != null) {
                 while (true) {
                     try {
-                        next = findNext(current, context);
+                        if (random) {
+                            next = findRandom(context);
+                        } else {
+                            next = findNext(current, context);
+                        }
                         Uri uri = Uri.parse(next.getPath() + "%2F" + next.getName());
                         wh.setLockWall(uri);
                         break;
@@ -51,7 +61,11 @@ public class OnLockService extends Service {
                 }
             } else {
                 Log.e("RECEIVER", "cannot find current wallpaper");
-                next = dbHelper.findFirst();
+                if (random) {
+                    next = findRandom(context);
+                } else {
+                    next = dbHelper.findFirst();
+                }
                 if (next != null) {
                     while (true) {
                         try {
@@ -92,6 +106,20 @@ public class OnLockService extends Service {
                     break;
                 }
             } while ( next.getId() == -1);
+            return next;
+        }
+
+        public ImageModel findRandom(Context context) {
+            ImageDbHelper dbHelper = new ImageDbHelper(context);
+            Integer nextId;
+            ImageModel next ;
+
+            ArrayList<Integer> idList = dbHelper.getAllIds();
+            Collections.shuffle(idList);
+
+            nextId = idList.get(0);
+            next = dbHelper.findById(nextId);
+
             return next;
         }
 
