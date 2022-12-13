@@ -38,6 +38,14 @@
         android:layout_below="@+id/path_view"
         android:text="@string/checkbox"/>
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/RandomImageOrder"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/LockScreenCheckBox"
+        android:text="@string/RandomImageOrder"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
