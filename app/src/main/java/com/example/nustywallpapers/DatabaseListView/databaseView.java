@@ -36,6 +36,7 @@ public class databaseView extends AppCompatActivity implements  ImageAdapter.Ite
         imageAdapter = new ImageAdapter(this, images);
         imageAdapter.setClickListener(this);
         recyclerView.setAdapter(imageAdapter);
+        dbHelper.close();
     }
 
     @Override
