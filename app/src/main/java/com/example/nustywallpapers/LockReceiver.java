@@ -80,7 +80,6 @@ public class LockReceiver extends BroadcastReceiver {
             }
 
         }
-        dbHelper.close();
 
     }
 

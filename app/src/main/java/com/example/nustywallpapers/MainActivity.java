@@ -10,9 +10,12 @@ import androidx.documentfile.provider.DocumentFile;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -79,11 +82,26 @@ public class MainActivity extends AppCompatActivity {
 */
 
         Intent intent = new Intent(this, OnLockService.class);
-        startService(intent);
+        if (!isMyServiceRunning(OnLockService.class)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
+        }
         //pathView.setText(PathHandler.loadValue(this, "path"));
 
     }
 
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     //GET FILE PERMISSIONS
     private ActivityResultLauncher<String> resultLauncher =
@@ -136,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (f.isFile()){
                                     if (f.getType().matches("(^)image(.*)")) {
                                         if (first) {
+                                            Log.d("URI", directory.getUri().toString());
 
                                             ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first, true);
                                             //imageDbHelper.insert(imageModel);
@@ -175,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             PathHandler.saveValue(this, RANDOM_IMAGE_CHECKBOX_KEY, "0");
         }
-
     }
 
 
