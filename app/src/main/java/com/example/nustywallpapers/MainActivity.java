@@ -44,12 +44,15 @@ public class MainActivity extends AppCompatActivity {
     CheckBox lockScreenCheckBox, randomCheckbox;
     ImageDbHelper imageDbHelper;
 
+    Thread dbThread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         pathView = findViewById(R.id.path_view);
         lockScreenCheckBox = findViewById(R.id.LockScreenCheckBox);
         randomCheckbox = findViewById(R.id.RandomImageOrder);
@@ -131,50 +134,65 @@ public class MainActivity extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
+                    //findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent i = result.getData();
-                        List<String> list = i.getData().getPathSegments();
+                        dbThread = new Thread(
+                                () -> {
 
-                        pathView.setText(PathHandler.pathConcat(list));
-                        PathHandler.saveValue(MainActivity.this, PATH_KEY, pathView.getText().toString());
 
-                        Uri uri = i.getData();
-                        DocumentFile directory = DocumentFile.fromTreeUri(MainActivity.this, uri);
-                        DocumentFile[] files;
+                                    Intent i = result.getData();
+                                    List<String> list = i.getData().getPathSegments();
 
-                        boolean first = true;
+                                    pathView.setText(PathHandler.pathConcat(list));
+                                    PathHandler.saveValue(MainActivity.this, PATH_KEY, pathView.getText().toString());
 
-                        ArrayList<ImageModel> forSave = new ArrayList<>();
+                                    Uri uri = i.getData();
+                                    getApplicationContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-                        imageDbHelper.deleteAll();
-                        if (directory != null) {
-                            files = directory.listFiles();
-                            for (int count = 0; count< files.length; count++) {
-                                DocumentFile f = files[count];
-                                if (f.isFile()){
-                                    if (f.getType().matches("(^)image(.*)")) {
-                                        if (first) {
-                                            Log.d("URI", directory.getUri().toString());
+                                    DocumentFile directory = DocumentFile.fromTreeUri(MainActivity.this, uri);
+                                    DocumentFile[] files;
 
-                                            ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first, true);
-                                            //imageDbHelper.insert(imageModel);
-                                            forSave.add(imageModel);
-                                            first = false;
-                                            continue;
+                                    boolean first = true;
+
+                                    ArrayList<ImageModel> forSave = new ArrayList<>();
+
+                                    imageDbHelper.deleteAll();
+                                    if (directory != null) {
+                                        files = directory.listFiles();
+                                        for (int count = 0; count< files.length; count++) {
+                                            DocumentFile f = files[count];
+                                            if (f.isFile()){
+                                                if (f.getType().matches("(^)image(.*)")) {
+                                                    if (first) {
+                                                        Log.d("URI", directory.getUri().toString());
+
+                                                        ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first, true);
+                                                        //imageDbHelper.insert(imageModel);
+                                                        forSave.add(imageModel);
+                                                        first = false;
+                                                        continue;
+                                                    }
+                                                    ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first, true);
+                                                    //imageDbHelper.insert(imageModel);
+                                                    forSave.add(imageModel);
+                                                    forSave.get(count-1).setLast(false);
+
+                                                }
+                                            }
                                         }
-                                        ImageModel imageModel = new ImageModel(directory.getUri().toString(), f.getName(), f.getName().hashCode(), false, first, true);
-                                        //imageDbHelper.insert(imageModel);
-                                        forSave.add(imageModel);
-                                        forSave.get(count-1).setLast(false);
-
+                                        imageDbHelper.saveAll(forSave);
+                                    } else {
+                                        Log.e("ERROR", "Directory is null");
+                                        BreadToast("directory is null");
                                     }
+
                                 }
-                            }
-                            imageDbHelper.saveAll(forSave);
-                        } else {
-                            Log.e("ERROR", "Directory is null");
-                            BreadToast("directory is null");
-                        }
+                        );
+
+                        dbThread.start();
+
+
+                        //findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 
                     }
                 }
@@ -196,6 +214,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (dbThread != null) {
+            dbThread.interrupt();
+            dbThread = null;
+        }
+    }
 
     @Override
     protected void onResume() {
