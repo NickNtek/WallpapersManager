@@ -1,11 +1,10 @@
-package com.example.nustywallpapers;
+package com.example.wallpapermanager;
 
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PathHandler {

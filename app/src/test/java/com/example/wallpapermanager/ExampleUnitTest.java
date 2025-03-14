@@ -1,4 +1,4 @@
-package com.example.nustywallpapers;
+package com.example.wallpapermanager;
 
 import org.junit.Test;
 
